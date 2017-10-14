@@ -1,56 +1,33 @@
 import pyspeedtest
-from datetime import date
+from time import localtime, strftime
 import os.path
 import csv
 
+
 fname = 'speed.csv'
+today = localtime()
 
-if(not os.path.isfile('speed.csv')):
-	row = [['Weekday','Month','Day','Year','Up','Down']]
-	file = open(fname,'w')
-	with file:
-		writer = csv.writer(file)
-		writer.writerows(row)	
-
-today = date.today()
-day_of_week = date.weekday(today)
-
-if(day_of_week == 0):
-	weekday = "Sunday"
-elif(day_of_week == 1):
-	weekday = "Monday"
-elif(day_of_week == 1):
-	weekday = "Tuesday"
-elif(day_of_week == 1):
-	weekday = "Wednesday"
-elif(day_of_week == 1):
-	weekday = "Thursday"
-elif(day_of_week == 1):
-	weekday = "Friday"
-else:
-	weekday = "Saturday"
-
-print "Day of week: ",weekday
-print "Month: ",today.month
-print "Day : ",today.day
-print "Year: ",today.year
-
-
+# Run speed test
 st = pyspeedtest.SpeedTest()
 st.ping()
 up = pyspeedtest.pretty_speed(st.upload())
 down = pyspeedtest.pretty_speed(st.download())
-print "Upload: ",up,"  Download:",down
 
-row = [[weekday, today.month, today.day, today.year, up, down]]
+
+# Check if file exists -- create and initialize with headers
+if(not os.path.isfile('speed.csv')):
+	row = [['Weekday','Time','Month','Day','Year','Up','Down']]
+	file = open(fname,'w')
+	with file:
+		writer = csv.writer(file)
+		writer.writerows([['Weekday','Time','Month','Day','Year','Up','Down']])	
+
+
+row = [[strftime("%a",today), strftime("%H:%M",today), today[1], today[2], today[0], up, down]]
 
 file = open(fname,'a')
 with file:
 	writer = csv.writer(file)
 	writer.writerows(row)
-
-print "Done"
-
-
 
 
